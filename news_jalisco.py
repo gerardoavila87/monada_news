@@ -3,64 +3,61 @@ import json
 from collections import Counter
 from functools import reduce
 import re  # Importar la librería de expresiones regulares
+from collections import defaultdict
+
+# Lista de palabras comunes a excluir ("stop words")
+STOP_WORDS = {
+    'jalisco', 'méxico', 'guadalajara', 'este', 'para', 'como', 'con', 'del', 'desde',
+    'más', 'que', 'una', 'los', 'las', 'sus', 'por', 'y', 'en', 'el', 'la', 'es', 'de',
+    'un', 'no', 'al', 'se', 'lo', 'a', 'sobre', 'han', 'son', 'una', 'entre', 'pero', 'ha',
+    'from', 'estados', 'nacional', 'california', 'donde', 'dónde', 'baja'
+}
 
 # Obtener noticias desde la API de NewsAPI
 def obtener_noticias(api_key, query):
     url = "https://newsapi.org/v2/everything"
     params = {
+        'searchIn':'content',
+        'from':'2024-09-01',
         'q': query,
         'apiKey': api_key
     }
     response = requests.get(url, params=params)
     return response.json().get('articles', [])
 
-# Cargar el archivo JSON con los municipios
-def cargar_municipios(file_path):
-    with open(file_path, 'r', encoding='utf-8') as f:
-        return json.load(f)
-
 # Función para limpiar y combinar título y descripción de cada noticia
 def limpiar_y_combinar_noticias(noticias):
     return map(lambda noticia: (noticia['title'] or '') + ' ' + (noticia['description'] or ''), noticias)
 
-# Función para contar la aparición de municipios en las noticias utilizando expresiones regulares
-def contar_municipios_en_texto(texto, municipios_por_estado):
-    contador = Counter()
-    for estado, municipios in municipios_por_estado.items():
-        for municipio in municipios:
-            # Usamos una expresión regular para encontrar coincidencias exactas de palabras
-            patron = r'\b' + re.escape(municipio) + r'\b'
-            if re.search(patron, texto, re.IGNORECASE):
-                contador[(estado, municipio)] += 1
-    return contador
+# Función para extraer palabras clave de las noticias
+def extraer_palabras_clave(texto):
+    palabras = re.findall(r'\b\w+\b', texto.lower())  # Extrae palabras ignorando mayúsculas y minúsculas
+    palabras_frecuentes = [palabra for palabra in palabras if len(palabra) > 3 and palabra not in STOP_WORDS]
+    return Counter(palabras_frecuentes)
 
-# Función principal que ejecuta el análisis de noticias y cuenta los municipios
-def analizar_municipios_en_noticias(api_key, query, municipios_file):
+# Función principal que ejecuta el análisis de noticias y cuenta las palabras clave
+def analizar_temas_en_noticias(api_key, query):
     # 1. Obtener noticias
     noticias = obtener_noticias(api_key, query)
-    
-    # 2. Cargar municipios desde archivo JSON
-    municipios_por_estado = cargar_municipios(municipios_file)
 
-    # 3. Limpiar y combinar las noticias
+    # 2. Limpiar y combinar las noticias
     textos_noticias = limpiar_y_combinar_noticias(noticias)
-    
-    # 4. Contar ocurrencias de municipios en todas las noticias
-    contador_final = reduce(lambda acc, texto: acc + contar_municipios_en_texto(texto, municipios_por_estado), textos_noticias, Counter())
-    
-    # 5. Devolver el conteo final
+
+    # 3. Extraer y contar las palabras clave
+    contador_final = reduce(lambda acc, texto: acc + extraer_palabras_clave(texto), textos_noticias, Counter())
+
+    # 4. Devolver el conteo final
     return contador_final
 
 # Mostrar resultados ordenados de mayor a menor
-def mostrar_resultados(conteo_municipios):
-    for (estado, municipio), conteo in conteo_municipios.most_common():
-        print(f"{estado} - {municipio}: {conteo} veces")
+def mostrar_resultados(conteo_palabras):
+    for palabra, conteo in conteo_palabras.most_common(10):  # Mostrar solo las 10 palabras más mencionadas
+        print(f"{palabra}: {conteo} veces")
 
 # Main - Ejecutar análisis
 if __name__ == "__main__":
     api_key = 'dfcde560d60e4f98b41098c0d2d60d77'  # API key
-    query = 'violencia, México'
-    municipios_file = 'municipios_mexico.json'  # Archivo JSON con todos los municipios de México
+    query = 'Jalisco'  # Consultar específicamente Jalisco
 
-    conteo_municipios = analizar_municipios_en_noticias(api_key, query, municipios_file)
-    mostrar_resultados(conteo_municipios)
+    conteo_palabras = analizar_temas_en_noticias(api_key, query)
+    mostrar_resultados(conteo_palabras)
