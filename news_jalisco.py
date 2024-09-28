@@ -4,7 +4,6 @@ from collections import Counter
 from functools import reduce
 from typing import Union
 
-
 # Clase Optional para manejar valores opcionales de forma segura
 class Optional:
     def __init__(self, value:Union[list,None]) -> None:
@@ -73,10 +72,9 @@ if __name__ == "__main__":
         'más', 'que', 'una', 'los', 'las', 'sus', 'por', 'y', 'en', 'el', 'la', 'es', 'de',
         'un', 'no', 'al', 'se', 'lo', 'a', 'sobre', 'han', 'son', 'una', 'entre', 'pero', 'ha',
         'from', 'estados', 'nacional', 'california', 'donde', 'dónde', 'baja', 'removed', '2024',
-        'esta'
-    }
-    api_key = 'dfcde560d60e4f98b41098c0d2d60d77' 
-    consulta_noticias = 'Jalisco' 
+        'esta' }
+    api_key = 'dfcde560d60e4f98b41098c0d2d60d77'
+    consulta_noticias = 'Jalisco'
     fecha_noticias = '2024-09-12'
 
     conteo_palabras = analizar_temas_en_noticias(api_key, consulta_noticias, fecha_noticias, excluir_palabras)
