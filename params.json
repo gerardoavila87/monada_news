@@ -1,0 +1,30 @@
+[
+    {
+        "searchIn": "content",
+        "api_key": "dfcde560d60e4f98b41098c0d2d60d77",
+        "q": "violencia",
+        "from": "2024-09-01"
+    },
+    {
+        "searchIn": "content",
+        "api_key": "null",
+        "q": "",
+        "from": ""
+    },
+    {
+        "searchIn": "content",
+        "api_key": "dfcde560d60e4f98b41098c0d2d60d77",
+        "q1": "",
+        "from": "123"
+    },
+    {
+        "searchIn": "content",
+        "api_key": "dfcde560d60e4f98b41098c0d2d60d77"
+    },
+    {
+        "searchIn": "content",
+        "api_key": "dfcde560d60e4f98b41098c0d2d60d77",
+        "q": "5",
+        "from": ""
+    }
+]
