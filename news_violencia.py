@@ -9,7 +9,7 @@ from typing import Union, List, Dict, Any
 
 # Este programa realiza un análisis de noticias que mencionen la violencia, 
 # obtenidas desde la API de NewsAPI para contar cuántas veces se mencionan
-# diferentes estados de México. 
+# los diferentes estados de México. 
 
 # 1.- Obtención de datos: Realiza múltiples solicitudes a la API de noticias
 # utilizando diferentes parámetros, los cuales se cargan aleatoriamente desde
